@@ -7,41 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.43.1] - 2026-05-20
+
 ### Added
 
-- Right-click a column header to copy all its values from the loaded rows (#1325)
-- Copy as submenu on the row context menu now offers CSV, CSV with Headers, Markdown table, and IN Clause for SQL `WHERE id IN (...)` lookups (#1325)
-- Plugin updates that arrive while a connection is open stage on disk and apply when you close the connection or quit, instead of blocking the update
-- Settings > Plugins shows a badge with the count of rejected plugins plus available updates so you can see at a glance when attention is needed
-- Connections whose driver plugin failed to load show a yellow triangle in the welcome list
-- Rejected driver plugins now show an inline banner with an Update Plugin button inside the connection form
+- Right-click a column header to copy all its loaded values (#1325)
+- The row "Copy as" submenu adds CSV, CSV with Headers, Markdown table, and an IN clause for `WHERE id IN (...)` lookups (#1325)
+- A plugin update that arrives while a connection is open installs when you close the connection or quit, instead of being blocked
+- Settings > Plugins shows a badge with the count of rejected plugins and available updates
+- Connections whose driver plugin failed to load show a yellow warning triangle in the welcome list
+- A rejected driver plugin shows an inline banner with an Update Plugin button in the connection form
 
 ### Changed
 
-- Plugin registry schema bumped to v2 with per-binary `pluginKitVersion`, so the app picks the binary built for its ABI even when newer or older binaries coexist in the registry (#1322)
-- Plugin install pipeline rewritten around a `PluginInstaller` actor with per-plugin coalescing, atomic install via `FileManager.replaceItem`, and `com.apple.quarantine` xattr stripping after extract
-- Auto-update now runs as a reconciliation loop after initial load with backoff (immediate, 30 s, 5 min) instead of a single best-effort pass, and works for every rejected plugin regardless of lazy or eager load path (#1322)
-- Plugin rejection no longer interrupts launch with a modal alert; the app posts a UserNotifications banner and surfaces rejected entries inline in Settings > Plugins with Update Now and Remove buttons
-- CI workflow `build-plugin.yml` accepts `tag:pluginKitVersion` pairs and reads `currentPluginKitVersion` from `PluginManager.swift`, replacing the hardcoded `minPluginKitVersion: 2` that made registry pre-install checks ineffective
-- New `scripts/release-all-plugins.sh` triggers a single workflow run that rebuilds every registry plugin for a given PluginKit version after an ABI bump
-- Double-click or press Return on a read-only query result cell to open a selectable text viewer in the cell. JSON columns open the JSON viewer in a popover, BLOB columns open the hex viewer. The value is selectable and copyable (#1336)
-
-### Changed
-
-- `Cmd+C` now copies the focused cell value when one row is selected and a cell has focus; with multiple rows selected, or when no cell is focused, it still copies row(s) as TSV. `Cmd+Shift+C` now always copies row(s) as TSV. "Copy with Headers" stays in the Edit menu and row context menu without a default shortcut (#1332)
-- `Cmd+F` toggles the filter panel when viewing a table, and opens the Find panel in the SQL editor. The old `Cmd+Shift+F` shortcut for filters is removed
+- A plugin that fails to load no longer interrupts launch with an alert. The app posts a notification and lists rejected plugins in Settings > Plugins with Update Now and Remove buttons (#1322)
+- Rejected plugins auto-update from the registry in the background, retrying with backoff until they load (#1322)
+- The app installs the plugin binary built for its own version, even when the registry holds binaries for other versions (#1322)
+- Double-click or press Return on a read-only result cell to open a selectable text viewer. JSON columns open a viewer popover and BLOB columns open the hex viewer (#1336)
+- `Cmd+C` copies the focused cell when one row is selected and a cell has focus; otherwise it copies the selected row(s) as TSV. `Cmd+Shift+C` always copies row(s) as TSV. "Copy with Headers" stays in the Edit and row context menus (#1332)
+- `Cmd+F` toggles the filter panel on a table and opens Find in the SQL editor. The old `Cmd+Shift+F` filter shortcut is removed
 
 ### Fixed
 
-- Resolves the recurring "Plugin was built with PluginKit version N, but version M is required" error after app updates (#1322, #1237, #923, #912, #443). Rejected plugins now auto-update from the registry without manual intervention
-- DuckDB Spatial `GEOMETRY` columns render as WKT, not NULL (#1324)
-- DuckDB `HUGEINT` and `UHUGEINT` keep full precision and no longer crash on negatives
-- DuckDB streaming results honor the row cap and render `TIMESTAMPTZ`/`TIMETZ`/`GEOMETRY` instead of NULL
-- DuckDB schema reads handle apostrophes and concurrent schema switches correctly
-- DuckDB ENUMs in non-`main` schemas resolve correctly
-- DuckDB `DATE` and `TIMESTAMP` BC years use a leading minus
-- `.db`, `.db3`, `.s3db`, `.sl3`, and `.sqlitedb` files now open in TablePro from Finder (#1327)
-- DynamoDB SSO connections work with modern `sso-session` profiles immediately after `aws sso login`, without needing to run another AWS CLI command first (#1333)
+- Fixes the recurring "Plugin was built with PluginKit version N, but version M is required" error after app updates. Rejected plugins now recover without manual steps (#1322, #1237, #923, #912, #443)
+- DuckDB spatial `GEOMETRY` columns show as WKT instead of NULL (#1324)
+- DuckDB `HUGEINT` and `UHUGEINT` keep full precision and no longer crash on negative values
+- DuckDB streaming results respect the row cap and show `TIMESTAMPTZ`, `TIMETZ`, and `GEOMETRY` instead of NULL
+- DuckDB schema reads handle apostrophes and concurrent schema switches
+- DuckDB ENUMs in schemas other than `main` resolve correctly
+- DuckDB `DATE` and `TIMESTAMP` BC years show a leading minus
+- `.db`, `.db3`, `.s3db`, `.sl3`, and `.sqlitedb` files open from Finder (#1327)
+- DynamoDB SSO connections work with `sso-session` profiles right after `aws sso login`, with no extra AWS CLI command (#1333)
 
 ## [0.43.0] - 2026-05-18
 
@@ -1924,7 +1920,8 @@ TablePro is a native macOS database client built with SwiftUI and AppKit, design
     - Custom SQL query templates
     - Performance optimized for large datasets
 
-[Unreleased]: https://github.com/TableProApp/TablePro/compare/v0.43.0...HEAD
+[Unreleased]: https://github.com/TableProApp/TablePro/compare/v0.43.1...HEAD
+[0.43.1]: https://github.com/TableProApp/TablePro/compare/v0.43.0...v0.43.1
 [0.43.0]: https://github.com/TableProApp/TablePro/compare/v0.42.0...v0.43.0
 [0.42.0]: https://github.com/TableProApp/TablePro/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/TableProApp/TablePro/compare/v0.40.3...v0.41.0
